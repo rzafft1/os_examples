@@ -55,10 +55,14 @@ void Reindeer(){
 
 void Santa(){
     while (true){
-        printf("(Update) Santa is Sleeping...\n");
+        printf("\n(Update) Santa is Sleeping...\n\n");
         sem_wait(&sleeping);
-        printf("(Update) Santa is Awake...\n");
-        sem_wait(&christmas);
+        printf("\n(Update) Santa is Awake...\n\n");
+        int christmas_time = (int) rand() % 31;
+        printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n\n", christmas_time);
+        sleep(christmas_time);
+        printf("\n(Update) Christmas time is over, santa is going to sleep, and the reindeers are going on vacation...\n\n", christmas_time);
+        sem_post(&christmas);
     }
 }
 
