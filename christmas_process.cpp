@@ -58,7 +58,7 @@ void Elf(){
         }
         sem_post(&multex);
         sem_wait(&fix);
-        printf("\n\n(Update) The 3 elves have had thier problem fixed...\n\n");
+        printf("\n\n(Update) Santa fixed Elf %d's problem...\n\n", tid);
     }
 }
 
@@ -97,7 +97,7 @@ void Santa(){
             printf("\n(Update) Santa is Awake. He was woken by the elves...\n\n");
             problem_count = 0;
             for (int i = 0; i < 3; i++){
-                printf("\n(Update) Santa is fixing elf problem %d..\n",i);
+                printf("\n(Update) Santa is fixing elf problem %d..\n",i+1);
                 sem_post(&fix);
             }
         }
