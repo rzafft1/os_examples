@@ -33,6 +33,7 @@ sem_t fix; // semaphore to keep track of when elves problmes are fixed
 sem_t busy; // keep track of when santa is busy either for christmas or helping the elves
 mutex m;  
 enum awakened_by {ELVES, REINDEER}; // keep track of who woke up santa
+awakened_by who_wokeup_santa;
 
 
 void Elf(){
@@ -52,7 +53,7 @@ void Elf(){
         if (problem_count == 3){
             printf("\n(Update) %d elves have a problem...\n", problem_count);
             printf("(Ready) Elf %d is waking up santa...\n", tid);
-            awakened_by = ELVES;
+            who_wokeup_santa = ELVES;
             problem_count = 0;
             sem_post(&sleeping);
         }
@@ -79,7 +80,7 @@ void Reindeer(){
         if (warming_up_count == 9){
             printf("\n(Update) %d reindeers are back from vacation, warming up in the hut...\n", warming_up_count);
             printf("(Ready) Reindeer %d is waking up santa...\n", tid);
-            awakened_by = REINDEER;
+            who_wokeup_santa = REINDEER;
             warming_up_count = 0;
             sem_post(&sleeping);
         }
@@ -95,7 +96,7 @@ void Santa(){
         sem_wait(&sleeping);
         printf("\n(Update) Santa is Awake...\n\n");
 
-        if (awakened_by == ELVES) {
+        if (who_wokeup_santa == ELVES) {
             int fix_time = (int) rand() % 31;
             printf("\n(Update) Santa is fixing elf problems for %d seconds...\n", fix_time);
             sleep(fix_time);
@@ -105,7 +106,7 @@ void Santa(){
             }
         }
 
-        if (awakened_by == REINDEER) {
+        if (who_wokeup_santa == REINDEER) {
             int christmas_time = (int) rand() % 31;
             printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n", christmas_time);
             sleep(fix_time);
