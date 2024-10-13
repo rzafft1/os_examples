@@ -47,7 +47,7 @@ void Reindeer(){
         }
         m.unlock();
 
-        sem_wait(&christmas);
+        break;
     }
 }
 
