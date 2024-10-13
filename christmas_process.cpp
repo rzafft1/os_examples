@@ -118,7 +118,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < 9; i++){
         reindeer[i] = thread(Reindeer);
     }
-    for (int i = 0; i < 9; i++){
+    for (int i = 0; i < n; i++){
         elves[i] = thread(Elf);
     }
 
