@@ -81,7 +81,6 @@ void Reindeer(){
             printf("\n(Update) %d reindeers are back from vacation, warming up in the hut...\n", warming_up_count);
             printf("(Ready) Reindeer %d is waking up santa...\n", tid);
             who_wokeup_santa = REINDEER;
-            warming_up_count = 0;
             sem_post(&sleeping);
         }
         sem_post(&multex);
@@ -96,7 +95,7 @@ void Santa(){
         sem_wait(&sleeping);
         printf("\n(Update) Santa is Awake...\n\n");
 
-        if (who_wokeup_santa == ELVES) {
+        if (who_wokeup_santa == ELVES && warming_up_count != 9) {
             int fix_time = (int) rand() % 31;
             printf("\n(Update) Santa is fixing elf problems for %d seconds...\n", fix_time);
             sleep(fix_time);
@@ -107,6 +106,7 @@ void Santa(){
         }
 
         if (who_wokeup_santa == REINDEER) {
+            warming_up_count = 0;
             int christmas_time = (int) rand() % 31;
             printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n", christmas_time);
             sleep(christmas_time);
