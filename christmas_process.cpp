@@ -109,7 +109,7 @@ void Santa(){
         if (who_wokeup_santa == REINDEER) {
             int christmas_time = (int) rand() % 31;
             printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n", christmas_time);
-            sleep(fix_time);
+            sleep(christmas_time);
             printf("(Update) Christmas time is over, santa is going to sleep, and the reindeers are going on vacation...\n\n");
             for (int i = 0; i < 9; i++){
                 sem_post(&christmas);
