@@ -25,26 +25,27 @@ sem_t sleeping; // santa has a semaphore to keep track of when he is sleeping
 sem_t vacation[9]; // each reindeer semaphore to keep track of when they are on vacation
 sem_t multex;
 sem_t christmas; // semaphore to keep track of when christmas is
+mutex m;  
 
 void Reindeer(){
     int tid; 
-    sem_wait(&multex);
+    m.lock();
     tid = reindeer_id;
     reindeer_id++;
-    sem_post(&multex);
+    m.unlock();
 
     while (true){
         int vacation_time = (int) rand() % 31;
         printf("(Update) Reindeer %d is on vacation for %d seconds\n",tid,vacation_time);
         sleep(vacation_time);
-        sem_wait(&multex);
+        m.lock();
         if (warming_up_count < 9){
             warming_up_count++;
         }
         if (warming_up_count == 9){
             printf("(Ready) Reindeer %d arrived to the hut. %d reindeers are warming up...\n",tid, warming_up_count);
         }
-        sem_post(&multex);
+        m.unlock();
 
         sem_wait(&christmas);
     }
