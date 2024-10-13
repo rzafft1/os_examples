@@ -122,9 +122,13 @@ int main(int argc, char* argv[]) {
         elves[i] = thread(Elf);
     }
 
-   for (int i = 0; i < 9; i++){
+    for (int i = 0; i < 9; i++){
         reindeer[i].join();
     }
+    for (int i = 0; i < n; i++){
+        elves[i].join();
+    }
+
 
     return 0;
 }
