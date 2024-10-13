@@ -62,7 +62,7 @@ void Santa(){
         printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n\n", christmas_time);
         sleep(christmas_time);
         printf("\n(Update) Christmas time is over, santa is going to sleep, and the reindeers are going on vacation...\n\n", christmas_time);
-        sem_post(&christmas);
+        sem_init(&christmas, 0, 9);
     }
 }
 
