@@ -39,9 +39,7 @@ void Reindeer(){
         printf("(Update) Reindeer %d is on vacation for %d seconds\n",tid,vacation_time);
         sleep(vacation_time);
         m.lock();
-        if (warming_up_count < 9){
-            warming_up_count++;
-        }
+        warming_up_count++;
         m.unlock();
 
         break;
