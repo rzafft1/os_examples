@@ -42,9 +42,6 @@ void Reindeer(){
         if (warming_up_count < 9){
             warming_up_count++;
         }
-        if (warming_up_count == 9){
-            printf("(Ready) Reindeer %d arrived to the hut. %d reindeers are warming up...\n",tid, warming_up_count);
-        }
         m.unlock();
 
         break;
