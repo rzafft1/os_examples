@@ -47,12 +47,18 @@ void Reindeer(){
         }
         sem_post(&multex);
 
-        break;
+        sem_wait(&christmas);
     }
 }
 
-// void Santa(){
-// }
+void Santa(){
+    while (true){
+        printf("(Update) Santa is Sleeping...\n");
+        sem_wait(&sleeping);
+        printf("(Update) Santa is Awake...\n");
+        sem_wait(&christmas);
+    }
+}
 
 int main(int argc, char* argv[]) {
 
