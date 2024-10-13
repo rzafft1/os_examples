@@ -39,7 +39,12 @@ void Reindeer(){
         printf("(Update) Reindeer %d is on vacation for %d seconds\n",tid,vacation_time);
         sleep(vacation_time);
         sem_wait(&multex);
-        warming_up_count++;
+        if (warming_up_count < 9){  
+            warming_up_count++;
+        }
+        if (warming_up_count == 9){
+            printf("(Ready) Reindeer %d arrived at the hut. %d reindeers are warming up...\n", tid, warming_up_count);
+        }
         sem_post(&multex);
 
         break;
