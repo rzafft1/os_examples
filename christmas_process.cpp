@@ -92,9 +92,9 @@ void Santa(){
     while (true){
         printf("\n(Update) Santa is Sleeping...\n\n");
         sem_wait(&sleeping);
-        printf("\n(Update) Santa is Awake...\n\n");
 
         if (who_wokeup_santa == ELVES && warming_up_count != 9) {
+            printf("\n(Update) Santa is Awake. He was woken by the elves...\n\n");
             problem_count = 0;
             for (int i = 0; i < 3; i++){
                 printf("\n(Update) Santa is fixing elf problem %d..\n",i);
@@ -103,6 +103,7 @@ void Santa(){
         }
 
         if (who_wokeup_santa == REINDEER) {
+            printf("\n(Update) Santa is Awake. He was woken by the reindeer...\n\n");
             warming_up_count = 0;
             int christmas_time = (int) rand() % 91;
             printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n", christmas_time);
