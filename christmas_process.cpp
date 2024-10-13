@@ -69,5 +69,9 @@ int main(int argc, char* argv[]) {
         reindeer[i] = thread(Reindeer);
     }
 
+   for (int i = 0; i < 9; i++){
+        reindeer[i].join();
+    }
+
     return 0;
 }
