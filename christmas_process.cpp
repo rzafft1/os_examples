@@ -29,7 +29,10 @@ sem_t sleeping; // santa has a semaphore to keep track of when he is sleeping
 sem_t vacation[9]; // each reindeer semaphore to keep track of when they are on vacation
 sem_t multex;
 sem_t christmas; // semaphore to keep track of when christmas is
+sem_t fix; // semaphore to keep track of when elves problmes are fixed
+sem_t busy; // keep track of when santa is busy either for christmas or helping the elves
 mutex m;  
+enum awakened_by {ELVES, REINDEER}; // keep track of who woke up santa
 
 
 void Elf(){
@@ -49,11 +52,12 @@ void Elf(){
         if (problem_count == 3){
             printf("\n(Update) %d elves have a problem...\n", problem_count);
             printf("(Ready) Elf %d is waking up santa...\n", tid);
+            awakened_by = ELVES;
             problem_count = 0;
-            // sem_post(&sleeping);
+            sem_post(&sleeping);
         }
         sem_post(&multex);
-        
+        sem_wait(&fix);
     }
 }
 
@@ -75,6 +79,7 @@ void Reindeer(){
         if (warming_up_count == 9){
             printf("\n(Update) %d reindeers are back from vacation, warming up in the hut...\n", warming_up_count);
             printf("(Ready) Reindeer %d is waking up santa...\n", tid);
+            awakened_by = REINDEER;
             warming_up_count = 0;
             sem_post(&sleeping);
         }
@@ -89,12 +94,25 @@ void Santa(){
         printf("\n(Update) Santa is Sleeping...\n\n");
         sem_wait(&sleeping);
         printf("\n(Update) Santa is Awake...\n\n");
-        int christmas_time = (int) rand() % 31;
-        printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n", christmas_time);
-        sleep(christmas_time);
-        printf("(Update) Christmas time is over, santa is going to sleep, and the reindeers are going on vacation...\n\n", christmas_time);
-        for (int i = 0; i < 9; i++){
-            sem_post(&christmas);
+
+        if (awakened_by == ELVES) {
+            int fix_time = (int) rand() % 31;
+            printf("\n(Update) Santa is fixing elf problems for %d seconds...\n", fix_time);
+            sleep(fix_time);
+            printf("(Update) Santa is done helping the elves, santa is going to sleep...\n\n");
+            for (int i = 0; i < 3; i++){
+                sem_post(&fix);
+            }
+        }
+
+        if (awakened_by == REINDEER) {
+            int christmas_time = (int) rand() % 31;
+            printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n", christmas_time);
+            sleep(fix_time);
+            printf("(Update) Christmas time is over, santa is going to sleep, and the reindeers are going on vacation...\n\n");
+            for (int i = 0; i < 9; i++){
+                sem_post(&christmas);
+            }
         }
     }
 }
@@ -102,10 +120,14 @@ void Santa(){
 int main(int argc, char* argv[]) {
 
     sem_init(&multex, 0, 1);
+    
     // initialize so that all reindeer are on vacation
     for (int i = 0; i < 9; i++){
         sem_init(&vacation[i], 0, 0);
     }
+
+    // initialize so no problems are fixed yet
+    sem_init(&fix, 0, 0);
 
     // initialize so that santa is sleeping
     sem_init(&sleeping, 0, 0);
