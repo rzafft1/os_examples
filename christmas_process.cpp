@@ -43,7 +43,8 @@ void Reindeer(){
             warming_up_count++;
         }
         if (warming_up_count == 9){
-            printf("(Ready) Reindeer %d arrived at the hut. %d reindeers are warming up...\n", tid, warming_up_count);
+            printf("(Update) %d reindeers are back from vacation, warming up in the hut...\n", warming_up_count);
+            printf("(Ready) Reindeer %d is waking up santa...\n", tid);
             sem_post(&sleeping);
         }
         sem_post(&multex);
