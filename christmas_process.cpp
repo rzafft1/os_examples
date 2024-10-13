@@ -43,7 +43,7 @@ void Reindeer(){
             warming_up_count++;
         }
         if (warming_up_count == 9){
-            printf("(Update) %d reindeers are back from vacation, warming up in the hut...\n", warming_up_count);
+            printf("\n(Update) %d reindeers are back from vacation, warming up in the hut...\n", warming_up_count);
             printf("(Ready) Reindeer %d is waking up santa...\n", tid);
             sem_post(&sleeping);
         }
@@ -62,7 +62,9 @@ void Santa(){
         printf("\n(Update) It is christmas time, santa and the reindeer are going off to work for %d seconds...\n\n", christmas_time);
         sleep(christmas_time);
         printf("\n(Update) Christmas time is over, santa is going to sleep, and the reindeers are going on vacation...\n\n", christmas_time);
-        sem_init(&christmas, 0, 9);
+        for (int i = 0; i < 9; i++){
+            sem_post(&christmas);
+        }
     }
 }
 
