@@ -29,10 +29,10 @@ mutex m;
 
 void Reindeer(){
     int tid; 
-    m.lock();
+    sem_wait(&multex);
     tid = reindeer_id;
     reindeer_id++;
-    m.unlock();
+    sem_post(&multex);
 
     while (true){
         int vacation_time = (int) rand() % 31;
