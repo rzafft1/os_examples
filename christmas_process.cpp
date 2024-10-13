@@ -24,13 +24,14 @@ thread santa; // 1 santa thread
 sem_t sleeping; // santa has a semaphore to keep track of when he is sleeping
 sem_t vacation[9]; // each reindeer semaphore to keep track of when they are on vacation
 sem_t multex;
+sem_t christmas; // semaphore to keep track of when christmas is
 
 void Reindeer(){
     int tid; 
-    multex.lock();
+    sem_wait(&multex);
     tid = reindeer_id;
     reindeer_id++;
-    multex.unlock();
+    sem_post(&multex);
 
     while (true){
         int vacation_time = (int) rand() % 31;
@@ -44,7 +45,8 @@ void Reindeer(){
             printf("(Ready) Reindeer %d arrived to the hut. %d reindeers are warming up...\n",tid, warming_up_count);
         }
         sem_post(&multex);
-        break;
+
+        sem_wait(&chirstmas);
     }
 }
 
@@ -53,6 +55,7 @@ void Reindeer(){
 
 int main(int argc, char* argv[]) {
 
+    
     // initialize so that all reindeer are on vacation
     for (int i = 0; i < 9; i++){
         sem_init(&vacation[i], 0, 0);
@@ -60,6 +63,9 @@ int main(int argc, char* argv[]) {
 
     // initialize so that santa is sleeping
     sem_init(&sleeping, 0, 0);
+
+    // initialize so that chistmas has not yet started
+    sem_init(&christmas, 0, 0);
 
     // start threads
     // santa = thread(Santa);
