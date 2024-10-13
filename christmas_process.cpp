@@ -17,7 +17,7 @@ If Santa wakes up to find three elves waiting at his shop's door, along with the
 You have to write three procedures: Santa(), elf(), and reindeer(). Santa executes Santa(), elves execute elf(), and reindeer execute reindeer(). Use semaphores for synchronization. 
 */
 
-int n;
+const int n = 4;
 thread elves[n]; // >3 elves
 int elf_id = 1;
 int problem_count = 0; // keep track of the problems that elves have
@@ -100,8 +100,6 @@ void Santa(){
 }
 
 int main(int argc, char* argv[]) {
-
-    n = 4;
 
     sem_init(&multex, 0, 1);
     // initialize so that all reindeer are on vacation
