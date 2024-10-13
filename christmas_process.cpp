@@ -38,9 +38,9 @@ void Reindeer(){
         int vacation_time = (int) rand() % 31;
         printf("(Update) Reindeer %d is on vacation for %d seconds\n",tid,vacation_time);
         sleep(vacation_time);
-        m.lock();
+        sem_wait(&multex);
         warming_up_count++;
-        m.unlock();
+        sem_post(&multex);
 
         break;
     }
