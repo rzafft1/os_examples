@@ -17,6 +17,10 @@ If Santa wakes up to find three elves waiting at his shop's door, along with the
 You have to write three procedures: Santa(), elf(), and reindeer(). Santa executes Santa(), elves execute elf(), and reindeer execute reindeer(). Use semaphores for synchronization. 
 */
 
+int n = 4;
+thread elves[n]; // >3 elves
+int elf_id = 1;
+int problem_count = 0; // keep track of the problems that elves have
 thread reindeer[9]; // 9 reindeers
 int reindeer_id = 1;
 int warming_up_count = 0; // count of reindeers warming up in the hut
@@ -26,6 +30,32 @@ sem_t vacation[9]; // each reindeer semaphore to keep track of when they are on 
 sem_t multex;
 sem_t christmas; // semaphore to keep track of when christmas is
 mutex m;  
+
+
+void Elf(){
+    int tid; 
+    sem_wait(&multex);
+    tid = elf_id;
+    elf_id++;
+    sem_post(&multex);
+
+    while (true){
+        int work_time = (int) rand() % 31;
+        printf("(Update) Elf %d is working for %d seconds\n",tid,work_time);
+        sleep(work_time);
+        printf("(Update) Elf %d has a problem\n",tid);
+        sem_wait(&multex);
+        problem_count++;
+        if (problem_count == 3){
+            printf("\n(Update) %d elves have a problem...\n", problem_count);
+            printf("(Ready) Elf %d is waking up santa...\n", tid);
+            problem_count = 0;
+            // sem_post(&sleeping);
+        }
+        sem_post(&multex);
+        
+    }
+}
 
 void Reindeer(){
     int tid; 
@@ -87,6 +117,9 @@ int main(int argc, char* argv[]) {
     santa = thread(Santa);
     for (int i = 0; i < 9; i++){
         reindeer[i] = thread(Reindeer);
+    }
+    for (int i = 0; i < 9; i++){
+        elves[i] = thread(Elf);
     }
 
    for (int i = 0; i < 9; i++){
