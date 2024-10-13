@@ -51,7 +51,7 @@ void Reindeer(){
 
 int main(int argc, char* argv[]) {
 
-    
+    sem_init(&multex, 0, 1);
     // initialize so that all reindeer are on vacation
     for (int i = 0; i < 9; i++){
         sem_init(&vacation[i], 0, 0);
