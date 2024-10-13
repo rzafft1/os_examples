@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
     sem_init(&christmas, 0, 0);
 
     // start threads
-    // santa = thread(Santa);
+    santa = thread(Santa);
     for (int i = 0; i < 9; i++){
         reindeer[i] = thread(Reindeer);
     }
