@@ -129,8 +129,8 @@ void savage(){
     while(true){
         int not_hungry_time = (int) rand() % 31;  
         sleep(not_hungry_time);
-        printf("!!! SAVAGE %d WANTS TO EAT...\n",tid);
         sem_wait(&turn);
+        printf("!!! SAVAGE %d WANTS TO EAT...\n",tid);
         take_serving(tid);
         sem_post(&turn);
     }
