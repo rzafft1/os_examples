@@ -127,9 +127,9 @@ void savage(){
         int not_hungry_time = (int) rand() % 31;  
         sleep(not_hungry_time);
         printf("!!! SAVAGE %d WANTS TO EAT...\n",tid);
-        multex.lock();
+        sem_wait(&servings_available);
         eat(tid);
-        multex.unlock();
+        sem_post(&servings_available);
     }
 
 }
