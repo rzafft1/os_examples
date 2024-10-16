@@ -31,10 +31,10 @@ int M;
 sem_t pot;  
 sem_t sleeping;
 sem_t fullpot;
+sem_t servings_available;
 thread savages[10];  
 thread cook;
 mutex multex;  
-mutex wakeup_cook;
 int savage_id = 1;
 int cook_id = 1;
 int servings;
@@ -94,7 +94,6 @@ void eat(int tid){
     }
     else {
         multex.unlock();
-        wakeup_cook.lock();
         printf("!!! SAVAGE %d IS WAKING UP THE COOK...\n",tid);
         /* -- wakeup the cook -- */
         sem_post(&sleeping);
@@ -106,7 +105,6 @@ void eat(int tid){
         multex.lock();
         servings--;
         multex.unlock();
-        wakeup_cook.unlock();
     }
 }
 
@@ -129,7 +127,9 @@ void savage(){
         int not_hungry_time = (int) rand() % 31;  
         sleep(not_hungry_time);
         printf("!!! SAVAGE %d WANTS TO EAT...\n",tid);
+        multex.lock();
         eat(tid);
+        multex.unlock();
     }
 
 }
@@ -152,6 +152,7 @@ int main(int argc, char* argv[]) {
     sem_init(&fullpot, 0, 0); 
      /* -- Initialize sleeping to 0, i.e. it the cook is sleeping -- */
     sem_init(&sleeping, 0, 0); 
+    sem_init(&servings_available, 0, 1);
     
     /* -- Let the savages eat... (create the savage threads) -- */
     for (int i = 0; i < 10; i++){
