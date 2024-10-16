@@ -59,7 +59,6 @@ void cooking(){
     while (true){
         sem_wait(&sleeping);
         printf("The cook is awake!\n");
-        //sem_init(&pot, 0, M);
         for (int i = 0; i < 5; i++){
             sem_post(&pot);
         }
@@ -79,7 +78,7 @@ void cooking(){
 * (4) If the pot is empty
 * (5) Wake up the cook (unlock sleeping semaphore to make the cook work)
 * (6) Wait until the cook has refilled the pot and all the savage to eat a serving
-* (6) Decrement the number of servings in the pot
+* (7) Decrement the number of servings in the pot
 * NOTE: we must use a mutex lock when checking or decrementing the value of the global variable "servings"
 */
 void take_serving(int tid){
