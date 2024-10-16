@@ -20,6 +20,7 @@ using namespace std;
 * pot : a semaphore initialized to M servings. The pot is either full (value of M), empty (value of 0), or partially full (value > 0 and < M)
 * sleeping : a semaphore whose value is 0 when the cook is sleeping, and 1 when the cook is awake
 * fullpot : a semaphore to notify the savages when the pot is full
+* turn : a sempaphore to make sure that only one savage takes a serving at a time
 * savages : an array of 10 threads / "savages".
 * cook : a single thread / "cook"
 * multex : multex : our mutex lock for atomic actions (i.e. refill pot as atomic action)
@@ -31,7 +32,7 @@ int M;
 sem_t pot;  
 sem_t sleeping;
 sem_t fullpot;
-sem_t servings_available;
+sem_t turn;
 thread savages[10];  
 thread cook;
 mutex multex;  
@@ -47,7 +48,7 @@ int servings;
 * (4) Notify the savage that the pot is full
 * NOTE : we must use a mutex lock when we reset the value of the global variable "servings"
 */
-void working(){
+void cooking(){
     int tid;
     multex.lock();
     tid = cook_id;
@@ -81,7 +82,7 @@ void working(){
 * (6) Decrement the number of servings in the pot
 * NOTE: we must use a mutex lock when checking or decrementing the value of the global variable "servings"
 */
-void eat(int tid){
+void take_serving(int tid){
     /* -- if pot is not empty -- */
     multex.lock(); 
     if (servings > 0){
@@ -113,7 +114,9 @@ void eat(int tid){
 * (0) Set id for savage thread, then increment the id counter for the next savage thread
 * (1) Get a random amount of time between 0 and 30 seconds that the savage thread will "not eat"/sleep for
 * (2) Savage thread sleeps/"doesnt eat" for the random amount of time 
-* (3) Call eat, so savage thread can "eat a serving". 
+* (3) Call take_serving(), so savage thread can "eat a serving". 
+      NOTE: we use the 'turn' semaphore to ensure that only one savage can take a servings at at time
+            without this, 2 savages could wakeup the cook at the same time...
 */
 void savage(){
     int tid;
@@ -127,9 +130,9 @@ void savage(){
         int not_hungry_time = (int) rand() % 31;  
         sleep(not_hungry_time);
         printf("!!! SAVAGE %d WANTS TO EAT...\n",tid);
-        sem_wait(&servings_available);
-        eat(tid);
-        sem_post(&servings_available);
+        sem_wait(&turn);
+        take_serving(tid);
+        sem_post(&turn);
     }
 
 }
@@ -150,9 +153,10 @@ int main(int argc, char* argv[]) {
     sem_init(&pot, 0, M);
     /* -- Initialize full pot to 1, i.e. it is full -- */
     sem_init(&fullpot, 0, 0); 
-     /* -- Initialize sleeping to 0, i.e. it the cook is sleeping -- */
+    /* -- Initialize sleeping to 0, i.e. it the cook is sleeping -- */
     sem_init(&sleeping, 0, 0); 
-    sem_init(&servings_available, 0, 1);
+    /* -- Initialize sleeping to 1, i.e. it is any savages turn to take a serving -- */
+    sem_init(&turn, 0, 1);
     
     /* -- Let the savages eat... (create the savage threads) -- */
     for (int i = 0; i < 10; i++){
@@ -162,7 +166,7 @@ int main(int argc, char* argv[]) {
     printf("\n-----> Savage Threads Created <-----\n\n");
     
     /* -- Let the cook sleep... (create the cook thread) -- */
-    cook = thread(working);
+    cook = thread(cooking);
     
     printf("\n-----> Cook Thread Created <-----\n\n");
 
