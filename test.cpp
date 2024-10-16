@@ -34,6 +34,7 @@ sem_t fullpot;
 thread savages[10];  
 thread cook;
 mutex multex;  
+mutex wakeup_cook;
 int savage_id = 1;
 int cook_id = 1;
 int servings;
@@ -81,12 +82,11 @@ void working(){
 * NOTE: we must use a mutex lock when checking or decrementing the value of the global variable "servings"
 */
 void eat(int tid){
-    sem_wait(&pot);
     /* -- if pot is not empty -- */
     multex.lock(); 
     if (servings > 0){
         multex.unlock();
-        //sem_wait(&pot);
+        sem_wait(&pot);
         printf("+++ Savage %d just ate serving %d.\n",tid, servings);
         multex.lock();
         servings--;
@@ -94,17 +94,19 @@ void eat(int tid){
     }
     else {
         multex.unlock();
+        wakeup_cook.lock();
         printf("!!! SAVAGE %d IS WAKING UP THE COOK...\n",tid);
         /* -- wakeup the cook -- */
         sem_post(&sleeping);
         /* -- wait until the cook is finished -- */
         sem_wait(&fullpot);
         /* -- give calling thread / savage a chance to eat first -- */
-        //sem_wait(&pot);
+        sem_wait(&pot);
         printf("+++ Savage %d just ate serving %d.\n",tid, servings);
         multex.lock();
         servings--;
         multex.unlock();
+        wakeup_cook.unlock();
     }
 }
 
